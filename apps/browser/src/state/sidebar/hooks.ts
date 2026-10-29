@@ -9,7 +9,7 @@ import { folderIn } from "../pins/tileFolders";
 import { useStoreWhile } from "../tabs/tabWatch";
 import { splitOf, splitRowPanes } from "../splits/splits";
 import { downloadsIn } from "../windows/ui";
-import { groupEntries, keptEntry, sidebarEntries } from "./entries";
+import { groupEntries, keptEntries, sidebarEntries } from "./entries";
 import { groupTabIds } from "./groupPanelRows";
 import { capture, type Capture } from "./listCapture";
 import { pinnedCollapsed, pinnedKept } from "./pinnedFold";
@@ -45,7 +45,8 @@ export const useCapturedSidebarEntries = (windowId: string, profileId: string, c
     return capture(captured, s, entries.list, entries);
   });
 
-export const useKeptEntry = (windowId: string, profileId: string, entries: string[]) => useBrowser((s) => keptEntry(s, windowId, profileId, entries));
+export const useKeptEntries = (windowId: string, profileId: string, groupId: string, entries: string[]) =>
+  useBrowser(useShallow((s) => keptEntries(s, windowId, profileId, groupId, entries)));
 
 export const usePinnedCollapsed = (profileId: string) => useBrowser((s) => pinnedCollapsed(s, profileId));
 

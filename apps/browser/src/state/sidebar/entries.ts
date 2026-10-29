@@ -5,6 +5,7 @@ import { splitRowPanes } from "../splits/splits";
 import { groupIndex, splitIndex, stableList } from "../browser/structure";
 import { tileCells } from "../pins/tileFolders";
 import { entryKey, parseEntry } from "./entryKey";
+import { rootOf } from "../groups/groupNesting";
 
 type SidebarEntries = { tiles: string[]; cells: string[]; pinned: string[]; list: string[] };
 
@@ -98,6 +99,18 @@ export function keptEntry(s: BrowserState, windowId: string, profileId: string, 
   const active = activeTabId(s, windowId, profileId);
   if (!active) return null;
   return entries.find((e) => holdsTab(s, e, active)) ?? null;
+}
+
+export function keptEntries(s: BrowserState, windowId: string, profileId: string, groupId: string, entries: string[]): string[] {
+  const active = activeTabId(s, windowId, profileId);
+  const keepsOpen = !!rootOf(s.groups, groupId)?.pinned;
+  return entries.filter((e) => (!!active && holdsTab(s, e, active)) || (keepsOpen && holdsOpenTab(s, e)));
+}
+
+function holdsOpenTab(s: BrowserState, entry: string): boolean {
+  const { kind, id } = parseEntry(entry);
+  const tabIds = kind === "group" ? (s.groups[id]?.tabIds ?? []) : kind === "split" ? (s.splits[id]?.tabIds ?? []) : [id];
+  return tabIds.some((tabId) => !!s.tabs[tabId] && !s.tabs[tabId]!.unloaded);
 }
 
 export function holdsTab(s: BrowserState, entry: string, tabId: string): boolean {

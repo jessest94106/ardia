@@ -4,7 +4,7 @@ import { live } from "../live/store";
 import { ancestorIds } from "../groups/groups";
 import { groupOf } from "../pins/organize";
 import { splitOf } from "../splits/splits";
-import { groupEntries, holdsTab, keptEntry, sidebarEntries } from "./entries";
+import { groupEntries, holdsTab, keptEntries, sidebarEntries } from "./entries";
 import { shownPinnedEntries } from "./pinnedFold";
 import { entryId, entryKey } from "./entryKey";
 
@@ -20,8 +20,11 @@ export const headGap = (first: string | null | undefined): number => (first && e
 function membersHeight(s: BrowserState, windowId: string, profileId: string, groupId: string): number {
   const entries = groupEntries(s, groupId);
   if (!s.groups[groupId]?.collapsed) return entries.length ? headGap(entries[0]) + entriesHeight(s, windowId, profileId, entries) + GROUP_PAD : GROUP_PAD;
-  const kept = keptEntry(s, windowId, profileId, entries);
-  return kept ? headGap(kept) + entryHeight(s, windowId, profileId, kept) + GROUP_PAD : 0;
+  return keptHeight(s, windowId, profileId, keptEntries(s, windowId, profileId, groupId, entries));
+}
+
+function keptHeight(s: BrowserState, windowId: string, profileId: string, kept: string[]): number {
+  return kept.length ? headGap(kept[0]) + entriesHeight(s, windowId, profileId, kept) + GROUP_PAD : 0;
 }
 
 export function entryHeight(s: BrowserState, windowId: string, profileId: string, entry: string): number {
@@ -71,8 +74,8 @@ export function rowSpan(
         const members = groupEntries(s, id);
         const header = top + GROUP_BORDER;
         if (!s.groups[id]!.collapsed) return within(members, header + ROW + headGap(members[0]));
-        const kept = keptEntry(s, windowId, profileId, members);
-        return kept && holdsTab(s, kept, tabId) ? within([kept], header + ROW + headGap(kept)) : header;
+        const kept = keptEntries(s, windowId, profileId, id, members);
+        return kept.some((e) => holdsTab(s, e, tabId)) ? within(kept, header + ROW + headGap(kept[0])) : header;
       }
       top += entryHeight(s, windowId, profileId, entry) + GAP;
     }
@@ -92,8 +95,7 @@ export const firstPaintEntriesNow = (windowId: string, profileId: string, entrie
 
 export function foldedGroupHeight(windowId: string, profileId: string, groupId: string): number {
   const s = useBrowser.getState();
-  const kept = keptEntry(s, windowId, profileId, groupEntries(s, groupId));
-  return GROUP_BORDER * 2 + ROW + (kept ? headGap(kept) + entryHeight(s, windowId, profileId, kept) + GROUP_PAD : 0);
+  return GROUP_BORDER * 2 + ROW + keptHeight(s, windowId, profileId, keptEntries(s, windowId, profileId, groupId, groupEntries(s, groupId)));
 }
 
 export const usePendingEntriesHeight = (windowId: string, profileId: string, entries: string[], from: number, growing: boolean): number =>

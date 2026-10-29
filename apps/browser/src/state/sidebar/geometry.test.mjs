@@ -3,7 +3,7 @@ import { test } from "node:test";
 const { useBrowser } = await import("../browser/store.ts");
 const { sidebarEntries } = await import("./entries.ts");
 const { entriesHeight, entriesWithin, entryHeight, firstPaintEntries, rowSpan, startsOffScreen, FIRST_PAINT_HEIGHT } = await import("./geometry.ts");
-const { groupEntries } = await import("./entries.ts");
+const { groupEntries, keptEntries } = await import("./entries.ts");
 await import("../../test-native/index.ts");
 
 const S = () => useBrowser.getState();
@@ -13,14 +13,14 @@ const tab = (i) => ({
   muted: false, zoom: 1, customTitle: null, customIcon: null, pinnedUrl: null, openerId: null, createdAt: i, lastActiveAt: i,
 });
 
-function hydrate({ collapsed = false, nested = null, active = "t0" } = {}) {
-  const tabs = Array.from({ length: 40 }, (_, i) => tab(i));
+function hydrate({ collapsed = false, nested = null, active = "t0", pinned = false, unloaded = [] } = {}) {
+  const tabs = Array.from({ length: 40 }, (_, i) => (unloaded.includes(`t${i}`) ? { ...tab(i), unloaded: true } : tab(i)));
   S().hydrate({
     profiles: { default: profile },
     windows: { w: { id: "w", profileId: "default", incognito: false, tabIds: tabs.map((t) => t.id), activeTabIds: { default: active }, sidebarOpen: true, frame: [0, 0, 1200, 800], createdAt: 0 } },
     tabs: Object.fromEntries(tabs.map((t) => [t.id, t])),
     groups: {
-      g: { id: "g", windowId: "w", profileId: "default", name: "G", icon: null, color: "blue", collapsed, pinned: false, tabIds: ["t2", "t3", "t4", "t5", "t6"], createdAt: 0 },
+      g: { id: "g", windowId: "w", profileId: "default", name: "G", icon: null, color: "blue", collapsed, pinned, tabIds: ["t2", "t3", "t4", "t5", "t6"], createdAt: 0 },
       ...(nested ? { n: { id: "n", windowId: "w", profileId: "default", name: "N", icon: null, color: null, collapsed: true, pinned: false, tabIds: nested, parentId: "g", createdAt: 0 } } : {}),
     },
   });
@@ -90,4 +90,23 @@ test("a collapsed group keeps its active nested group a row gap below its header
   assert.equal(entryHeight(s, "w", "default", "g:n"), 1 + 34 + 34 + 2);
   assert.equal(entryHeight(s, "w", "default", "g:g"), 1 + 34 + 3 + entryHeight(s, "w", "default", "g:n") + 2);
   assert.equal(rowSpan(s, "w", "default", "t3", false).top, 2 * 37 + 0.5 + 34 + 3 + 0.5 + 34);
+});
+
+test("a collapsed pinned group keeps every open tab in view, its unopened bookmarks folded away", () => {
+  hydrate({ collapsed: true, pinned: true, active: "t0", unloaded: ["t2", "t4", "t6"] });
+  const s = S();
+  const members = groupEntries(s, "g");
+  assert.deepEqual(keptEntries(s, "w", "default", "g", members), ["t:t3", "t:t5"]);
+  assert.equal(entryHeight(s, "w", "default", "g:g"), 1 + 34 + 34 + 3 + 34 + 2);
+  assert.equal(rowSpan(s, "w", "default", "t5", false).top, 0.5 + 34 + 37);
+  assert.equal(rowSpan(s, "w", "default", "t4", false).top, 0.5);
+});
+
+test("a collapsed pinned group keeps the shown tab beside the open ones; a collapsed unpinned group keeps only the shown tab", () => {
+  hydrate({ collapsed: true, pinned: true, active: "t4", unloaded: ["t2", "t3", "t6"] });
+  assert.deepEqual(keptEntries(S(), "w", "default", "g", groupEntries(S(), "g")), ["t:t4", "t:t5"]);
+  hydrate({ collapsed: true, active: "t4" });
+  assert.deepEqual(keptEntries(S(), "w", "default", "g", groupEntries(S(), "g")), ["t:t4"]);
+  hydrate({ collapsed: true, active: "t0" });
+  assert.deepEqual(keptEntries(S(), "w", "default", "g", groupEntries(S(), "g")), []);
 });

@@ -6,7 +6,7 @@ import { updateGroup } from "../../state/groups/actions";
 import { useGroupLabel } from "../../state/groups/hooks";
 import { useSelectionInGroup } from "../../state/pins/hooks";
 import { newCapture } from "../../state/sidebar/listCapture";
-import { useCapturedGroupEntries, useGroupFirstTabIcon, useKeptEntry } from "../../state/sidebar/hooks";
+import { useCapturedGroupEntries, useGroupFirstTabIcon, useKeptEntries } from "../../state/sidebar/hooks";
 import { MeetingTimeLabel, useMeetingCountdown } from "../live/MeetingCountdown";
 import { HoverSlot } from "../ui/HoverSlot";
 import { Button, ContextMenuArea, FadeLabel, font, ink, radius, Surface, Symbol, weight, withAlpha } from "../ui";
@@ -88,7 +88,7 @@ export const GroupBlock = memo(function GroupBlock({
   const entries = useCapturedGroupEntries(groupId, captured);
   const selectedInside = useSelectionInGroup(windowId, groupId);
   const profileId = usePageProfileId();
-  const activeEntry = useKeptEntry(windowId, profileId, entries);
+  const kept = useKeptEntries(windowId, profileId, groupId, entries);
   const foldedHeight = () => foldedGroupHeight(windowId, profileId, groupId);
   const { wrapper, handle, headerRef } = useDragItem(entryKey("group", groupId), { kind: "group", tabIds: tabIds.split(",").filter(Boolean), section, groupId, collapsed: stored, foldedHeight, parentGroup }, own?.clip);
   const tail = useDragItem(tailKey({ group: groupId }), { kind: "tail", tabIds: [], section, parentGroup: groupId });
@@ -128,10 +128,10 @@ export const GroupBlock = memo(function GroupBlock({
                     ),
                   },
             )}
-            keep={activeEntry}
+            keep={kept}
             gap={layout.rowGap}
             rowHeight={(key) => entryHeightNow(windowId, profileId, key)}
-            padTop={headGap(collapsed && activeEntry ? activeEntry : entries[0])}
+            padTop={headGap(collapsed && kept.length ? kept[0] : entries[0])}
             padBottom={PAD}
             indent={GROUP_INDENT}
             mountClosed={selectedInside}
