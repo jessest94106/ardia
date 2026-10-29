@@ -61,6 +61,11 @@ const NEW_TAB_BUTTON: { value: Settings["newTabButtonPosition"]; title: string }
   { value: "top", title: "At the top" },
 ];
 
+const TIDY_TABS_GROUPS: { value: Settings["tidyTabsGroups"]; title: string }[] = [
+  { value: "keep", title: "Leave groups as they are" },
+  { value: "regroup", title: "Ungroup and regroup" },
+];
+
 const DURATION_UNITS: Option<DurationUnit>[] = [
   { value: "minutes", title: "Minutes" },
   { value: "hours", title: "Hours" },
@@ -71,6 +76,7 @@ export function TabsPane() {
   const newTabOpens = useSettings((s) => s.newTabOpens);
   const newTabPosition = useSettings((s) => s.newTabPosition);
   const newTabButtonPosition = useSettings((s) => s.newTabButtonPosition);
+  const tidyTabsGroups = useSettings((s) => s.tidyTabsGroups);
   const cleanUpMinutes = useSettings((s) => s.cleanUpInactiveTabsAfterMinutes);
   const top = useTabLayout() === "top";
 
@@ -125,6 +131,9 @@ export function TabsPane() {
       <Group>
         <SettingToggle anchor="tabs.warnBeforeClosingTabGroup" />
         <SettingToggle anchor="tabs.cmdClickCreatesTabGroup" />
+        <Row anchor="tabs.tidyTabsGroups">
+          <PopUp value={tidyTabsGroups} options={TIDY_TABS_GROUPS} onChange={(v) => updateSettings({ tidyTabsGroups: v })} minWidth={220} />
+        </Row>
         <SettingToggle anchor="tabs.optShiftClickOpensInGroup" />
         <SettingToggle anchor="tabs.autoGroupMeetingTabs" />
       </Group>

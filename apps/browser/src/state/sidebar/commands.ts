@@ -9,6 +9,7 @@ import { toggleNewTabBar } from "../omnibox/newTabBar";
 import { movePinnedTitle, togglePinnedRows } from "./movePinned";
 import { setSidebarUi } from "./sidebarUi";
 import { tidyPins } from "./tidyPinsUi";
+import { tidyTabs } from "./tidyTabsUi";
 import { switcherStep } from "./switcher";
 
 export function runSidebarCommand(command: BrowserCommand, arg: string | null, windowId: string): boolean {
@@ -33,6 +34,9 @@ export function runSidebarCommand(command: BrowserCommand, arg: string | null, w
       return true;
     case "tidyPins":
       tidyPins(windowId);
+      return true;
+    case "tidyTabs":
+      tidyTabs(windowId);
       return true;
     case "searchTabs":
       setSidebarUi({ searchTabs: windowId, hover: null });

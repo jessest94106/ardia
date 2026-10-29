@@ -5,7 +5,7 @@ import { layout, useTheme } from "../ui/theme";
 import { useSettings } from "../../state/browser/hooks";
 import { isIncognitoProfile } from "../../state/browser/model";
 import { newCapture } from "../../state/sidebar/listCapture";
-import { useCanTidyPins, useCapturedSidebarEntries, usePinnedCollapsed, usePinnedKept } from "../../state/sidebar/hooks";
+import { useCanTidyPins, useCanTidyTabs, useCapturedSidebarEntries, usePinnedCollapsed, usePinnedKept } from "../../state/sidebar/hooks";
 import { useAddressBarInSidebar } from "../../state/windows/layout";
 import { ClearDivider } from "./ClearDivider";
 import { useDragController, useDragItem } from "./DragProvider";
@@ -57,9 +57,10 @@ export function PageRows({ windowId, profileId, current, rows, lazy, offScreen, 
   const showClear = useSettings((s) => s.showClearButton);
   const clearable = showClear && !offScreen && all.length > 0;
   const tidy = useCanTidyPins(windowId, profileId, offScreen);
+  const tidyTabs = useCanTidyTabs(windowId, profileId, offScreen);
   const pinned = usePinnedSequence(windowId, profileId, offScreen);
   const pinnedSection = pinned.length > 0;
-  const divided = clearable || tidy || pinnedSection;
+  const divided = clearable || tidy || tidyTabs || pinnedSection;
   const collapsed = usePinnedCollapsed(profileId);
   const pinnedFold = useFold(collapsed);
   const kept = usePinnedKept(windowId, profileId, pinned);
@@ -102,6 +103,7 @@ export function PageRows({ windowId, profileId, current, rows, lazy, offScreen, 
             spaced={pinnedSection}
             clear={clearable}
             tidy={tidy}
+            tidyTabs={tidyTabs}
             pinned={pinnedSection ? { collapsed, open: pinnedFold.open } : null}
           />
         ) : null}

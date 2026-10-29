@@ -5,6 +5,7 @@ import { ContextMenuArea, Symbol, useHover, weight } from "../ui";
 import { SIDEBAR_TYPE } from "./tokens";
 import { closeAllTabs } from "../../state/sidebar/clearTabs";
 import { tidyPins } from "../../state/sidebar/tidyPinsUi";
+import { tidyTabs } from "../../state/sidebar/tidyTabsUi";
 import { openSidebarMenu } from "../../state/sidebar/menus";
 import { PINNED_FOLD_TITLES, togglePinnedFold } from "../../state/sidebar/pinnedFold";
 
@@ -14,9 +15,9 @@ const SPACED_TOP = 7;
 
 type PinnedFold = { collapsed: boolean; open: Animated.Value };
 
-type DividerProps = { windowId: string; profileId: string; spaced: boolean; clear: boolean; tidy: boolean; pinned: PinnedFold | null };
+type DividerProps = { windowId: string; profileId: string; spaced: boolean; clear: boolean; tidy: boolean; tidyTabs: boolean; pinned: PinnedFold | null };
 
-export const ClearDivider = memo(function ClearDivider({ windowId, profileId, spaced, clear, tidy, pinned }: DividerProps) {
+export const ClearDivider = memo(function ClearDivider({ windowId, profileId, spaced, clear, tidy, tidyTabs: tabsTidy, pinned }: DividerProps) {
   const theme = useTheme();
   const { hovered: shown, hoverProps } = useHover();
   const [actionsWidth, setActionsWidth] = useState(0);
@@ -52,9 +53,13 @@ export const ClearDivider = memo(function ClearDivider({ windowId, profileId, sp
           onLayout={(e) => setActionsWidth(e.nativeEvent.layout.width)}
           style={{ position: "absolute", right: PADDING, top: 0, bottom: 0, flexDirection: "row", alignItems: "center", opacity: shown ? 1 : 0 }}
         >
-          {tidy ? <DividerButton title="Tidy" symbol="sparkles" iconWidth={10} label="Tidy pinned tabs" onPress={() => tidyPins(windowId, profileId)} /> : null}
-          {tidy && clear ? <View style={{ width: 1, height: 9, marginLeft: 8, backgroundColor: theme.divider }} /> : null}
-          {clear ? <DividerButton title="Clear" symbol="arrow.down" iconWidth={8} label="Clear unpinned tabs" onPress={() => closeAllTabs(windowId)} /> : null}
+          {[
+            tidy ? <DividerButton key="pins" title={tabsTidy ? "Tidy Pins" : "Tidy"} symbol="sparkles" iconWidth={10} label="Tidy pinned tabs" onPress={() => tidyPins(windowId, profileId)} /> : null,
+            tabsTidy ? <DividerButton key="tabs" title="Tidy" symbol="sparkles" iconWidth={10} label="Tidy tabs by website" onPress={() => tidyTabs(windowId, profileId)} /> : null,
+            clear ? <DividerButton key="clear" title="Clear" symbol="arrow.down" iconWidth={8} label="Clear unpinned tabs" onPress={() => closeAllTabs(windowId)} /> : null,
+          ]
+            .filter((button) => button !== null)
+            .flatMap((button, i) => (i ? [<View key={`gap${i}`} style={{ width: 1, height: 9, marginLeft: 8, backgroundColor: theme.divider }} />, button] : [button]))}
         </View>
       </View>
     </ContextMenuArea>

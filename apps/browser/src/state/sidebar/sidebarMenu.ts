@@ -12,6 +12,8 @@ import { lastClosedEntry } from "../windows/reopenClosed";
 import { newLiveFolderMenuItem, runNewLiveFolder } from "./liveMenus";
 import { sections } from "./menuParts";
 import { pinnedFoldMenuItem, runPinnedFold } from "./pinnedFold";
+import { canTidyTabs } from "../pins/tidyTabs";
+import { tidyTabs } from "./tidyTabsUi";
 
 const store = () => useBrowser.getState();
 
@@ -22,7 +24,11 @@ export function sidebarMenuItems(s: BrowserState, windowId: string): MenuItem[] 
       { id: "newTab", title: "New Tab", symbol: "plus.app", ...menuShortcut("newTab", s) },
       { id: "reopen", title: "Reopen Closed Tab", enabled: !!lastClosedEntry(s, windowId), ...menuShortcut("reopenClosedTab", s) },
     ],
-    [{ id: "newGroup", title: "New Group", symbol: "folder.badge.plus" }, newLiveFolderMenuItem()],
+    [
+      { id: "newGroup", title: "New Group", symbol: "folder.badge.plus" },
+      newLiveFolderMenuItem(),
+      { id: "tidyTabs", title: "Tidy Tabs by Website", symbol: "sparkles", enabled: canTidyTabs(s, windowId) },
+    ],
     [{ id: "newProfile", title: "New Profile…", symbol: "plus" }],
     [{ id: "bookmarkAll", title: "Bookmark All Tabs…", symbol: "bookmark", ...menuShortcut("bookmarkAllTabs", s) }],
     [
@@ -45,6 +51,7 @@ export async function openSidebarMenu(windowId: string) {
     const id = s.newTab(windowId);
     if (id) newGroupWithSelection(windowId, [id]);
   } else if (choice === "newProfile") void requestCreateProfile(windowId).then((id) => id && switchProfile(windowId, id));
+  else if (choice === "tidyTabs") tidyTabs(windowId);
   else if (choice === "bookmarkAll") bookmarkAllTabs(windowId);
   else if (choice === "tabLayout") s.toggleTabLayout(windowId);
   else if (choice === "autoHide") s.toggleSidebar(windowId);

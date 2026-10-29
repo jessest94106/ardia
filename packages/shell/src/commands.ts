@@ -78,6 +78,7 @@ export type BrowserCommand =
   | "newGroupWithTabs"
   | "cleanUpTabs"
   | "tidyPins"
+  | "tidyTabs"
   | "searchTabs"
   | "renameTab"
   | "changeTabIcon"

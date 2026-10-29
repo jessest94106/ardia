@@ -221,6 +221,11 @@ export const generalRows = {
           keywords: ["confirm", "close group", "folder", "accidentally"],
         },
         cmdClickCreatesTabGroup: { advanced: true, title: "⌘-clicking links creates tab groups", keywords: ["command click", "cmd click"] },
+        tidyTabsGroups: {
+          title: "Tidy Tabs by Website",
+          description: "Leave groups as they are tidies only the tabs outside a group. Ungroup and regroup takes your unpinned groups apart first, keeping a group that already holds one website, then groups every unpinned tab by website. Pinned tabs and pinned groups stay put either way.",
+          keywords: ["tidy", "group by website", "group by site", "regroup", "ungroup", "organize", "sort tabs"],
+        },
         optShiftClickOpensInGroup: {
           advanced: true,
           title: "⌥⇧-click opens tab in group",

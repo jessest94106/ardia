@@ -63,6 +63,7 @@ export const SETTING_SPECS = {
   tabReorderHaptics: flag(true, SYNCED),
   extendWebsiteColor: flag(true, SYNCED),
   cmdClickCreatesTabGroup: flag(true, SYNCED),
+  tidyTabsGroups: oneOf(["keep", "regroup"], "keep", SYNCED),
   optShiftClickOpensInGroup: flag(true, SYNCED),
   peekModifier: oneOf(["alt", "shift", "off"], "shift", SYNCED),
   peekLinksToOtherSites: flag(false, SYNCED),

@@ -262,6 +262,7 @@ test("the sidebar background menu: new things, then the sidebar toggles, Close A
     "---",
     "New Group [folder.badge.plus]",
     "New Live Folder ›",
+    "Tidy Tabs by Website [sparkles] (off)",
     "---",
     "New Profile… [plus]",
     "---",
@@ -275,6 +276,8 @@ test("the sidebar background menu: new things, then the sidebar toggles, Close A
   ]);
   S().closeTabs([ids[1]]);
   assert.ok(top(sidebarMenuItems(S(), w)).includes("Reopen Closed Tab ⇧⌘T"));
+  S().newTab(w, { url: "https://a.com/2", background: true });
+  assert.ok(top(sidebarMenuItems(S(), w)).includes("Tidy Tabs by Website [sparkles]"), "on once a website has two loose tabs");
 });
 
 test("a Top Apps folder: unpin its tabs, rename, then remove the folder", () => {

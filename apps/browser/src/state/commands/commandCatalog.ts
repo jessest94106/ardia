@@ -111,6 +111,7 @@ export const COMMANDS: Readonly<Record<BrowserCommand, CommandSpec>> = {
   newGroupWithTabs: { title: "New Group with Tab", symbol: "folder.badge.plus", keys: ["⌃⌘N", "⌃⌘P"], ...windowOffInLittleArdia },
   cleanUpTabs: { title: "Clean Up Tabs", symbol: "sparkles", keys: ["⌥⌘K"], ...windowOffInLittleArdia },
   tidyPins: { title: "Tidy Pins", symbol: "sparkles" },
+  tidyTabs: { title: "Tidy Tabs by Website", symbol: "sparkles", ...windowOffInLittleArdia },
   searchTabs: { title: "Search Tabs…", symbol: "magnifyingglass", keys: ["⇧⌘A"], ...windowOffInLittleArdia },
   renameTab: { title: "Rename…", barTitle: "Rename Tab", symbol: "pencil", ...windowOffInLittleArdia },
   changeTabIcon: { title: "Change Icon…", ...windowOffInLittleArdia },
