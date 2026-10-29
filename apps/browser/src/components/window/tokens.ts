@@ -13,6 +13,8 @@ const DARK = {
   swipeChevron: "#FFFFFFD9",
   swipeRim: "rgba(255,255,255,0.15)",
   swipeSelection: "rgba(255,255,255,0.1)",
+  newTabCardFill: "rgba(44,42,43,0.9)",
+  newTabCardBorder: "rgba(255,255,255,0.14)",
 };
 
 const LIGHT: typeof DARK = {
@@ -25,6 +27,8 @@ const LIGHT: typeof DARK = {
   swipeChevron: "#000000D9",
   swipeRim: "rgba(0,0,0,0.125)",
   swipeSelection: "rgba(0,0,0,0.1)",
+  newTabCardFill: "rgba(255,255,255,0.92)",
+  newTabCardBorder: "rgba(0,0,0,0.1)",
 };
 
 export type WindowColors = typeof DARK;
@@ -43,6 +47,7 @@ export const SHADOWS = {
   cliPill: { color: ink.black, opacity: PANEL_SHADOW_OPACITY, radius: 14, offset: [0, 4] },
   sidebarPeek: { color: ink.black, opacity: PANEL_SHADOW_OPACITY, radius: 20, offset: [0, 6] },
   swipe: { color: ink.black, opacity: { dark: 0.25, light: 0.2 }, radius: 8, offset: [0, 2] },
+  newTabCard: { color: ink.black, opacity: { dark: 0.4, light: 0.14 }, radius: 16, offset: [0, 6] },
 } satisfies Record<string, ShadowLevel>;
 
 export const STATUS_MOTION = {
@@ -53,6 +58,13 @@ export const STATUS_MOTION = {
 export const CLI_PILL_MOTION = {
   show: { duration: 160, easing: curve.outCubic },
   hide: { duration: 200, easing: curve.inQuad },
+} as const;
+
+export const NEW_TAB_CARD = { width: 264, inset: 12, slide: 24, holdMs: 2600 } as const;
+
+export const NEW_TAB_CARD_MOTION = {
+  in: { speed: 18, bounciness: 6 },
+  out: { duration: 220, easing: curve.inQuad },
 } as const;
 
 export const SWIPE_MOTION = {

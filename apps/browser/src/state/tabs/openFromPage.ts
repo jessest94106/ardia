@@ -6,6 +6,7 @@ import { peekSourceOf } from "../peek/peek";
 import { isSmall, originalProfile, privateWindowProfile } from "../windows/small";
 import { openLinkInSplit, openSplitPane } from "../splits/actions";
 import { isAdoptKind } from "./adoptIds";
+import { showNewTabCard } from "./newTabCard";
 
 export type { OpenWindowRequest } from "../../platform/tabs";
 
@@ -40,7 +41,8 @@ export function openFromPage({ url, adoptId, disposition, profile, point }: Open
     return void openWindow(w.incognito ? { incognito: true, url, profileId: originalProfile(s, w) } : { profileId: from.profileId, url, adoptId });
   }
   const background = disposition === "background" || from.profileId !== w.profileId;
-  s.newTab(w.id, { url, adoptId, openerId: from.tabId, profileId: from.profileId, background });
+  const tabId = s.newTab(w.id, { url, adoptId, openerId: from.tabId, profileId: from.profileId, background });
+  if (background) showNewTabCard(w.id, tabId);
 }
 
 export function pageProfileId(windowId: string, pageProfile: string): string {

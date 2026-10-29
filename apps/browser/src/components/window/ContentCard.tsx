@@ -13,6 +13,7 @@ import { useFullscreenTab } from "../../state/tabs/pageState";
 import { DropTargets, SplitDividers, SplitToast } from "../split/SplitChrome";
 import { dockMoving, usePeekEdge, whenDockStill } from "../../state/windows/dockMotion";
 import { FrozenPage } from "./FrozenPage";
+import { NewTabCard } from "./NewTabCard";
 import { setCardAnchor, setUrlAnchor, useAddressBarInSidebar, useTabLayout, watchToolbarExtensionsWidth } from "../../state/windows/layout";
 import { startSelectionTools } from "../../state/site/selection";
 import { startMedia } from "../../state/media/pip";
@@ -168,6 +169,7 @@ export function ContentCard() {
         />
       )}
       <SplitToast windowId={windowId} />
+      {!small && <NewTabCard windowId={windowId} top={windowToolbar ? toolbarRow.height : 0} />}
     </View>
   );
 }
